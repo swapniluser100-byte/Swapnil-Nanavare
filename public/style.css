@@ -301,8 +301,9 @@ section.block{padding:56px 0;border-top:1px solid var(--border);}
   color:var(--text-main);
   font-size:1.05rem;
   line-height:1.95;
-  white-space:pre-line;
 }
+.detail-desc p{margin:0 0 18px;}
+.detail-desc p:last-child{margin-bottom:0;}
 
 /* ---------- Contact ---------- */
 .contact-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:8px 0 40px;}

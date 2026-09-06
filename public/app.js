@@ -118,6 +118,23 @@ function renderAwardGrid() {
     })
     .join("");
 }
+function renderDescription(text) {
+  const container = document.getElementById("d-desc");
+  const normalized = (text || "").replace(/\r\n/g, "\n").trim();
+  if (!normalized) {
+    container.innerHTML = "";
+    return;
+  }
+  // Paragraphs are separated by a blank line. Within a paragraph, single
+  // line breaks are treated as soft wraps and joined into flowing text
+  // so it fills the full width instead of breaking at every line.
+  const blocks = normalized
+    .split(/\n\s*\n/)
+    .map((b) => b.split("\n").map((s) => s.trim()).filter(Boolean).join(" "))
+    .filter(Boolean);
+  container.innerHTML = blocks.map((b) => `<p>${escapeHtml(b)}</p>`).join("");
+}
+
 function openDetail(id) {
   const a = awardsCache.find((x) => x.id === id);
   if (!a) return;
@@ -126,7 +143,7 @@ function openDetail(id) {
   if (a.year) meta.push("वर्ष: " + a.year);
   if (a.org) meta.push("संस्था: " + a.org);
   document.getElementById("d-meta").textContent = meta.join("   |   ");
-  document.getElementById("d-desc").textContent = a.description || "";
+  renderDescription(a.description || "");
   renderSlider(a.photos || [], a.title);
   currentDetailAwardId = a.id;
   document.getElementById("detail-comment-form").reset();
