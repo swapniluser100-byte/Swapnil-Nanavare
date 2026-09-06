@@ -1,0 +1,8 @@
+name = "swapnil-nanavare-website"
+compatibility_date = "2024-09-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "swapnil_nanavare_db"
+database_id = "ba40e2ee-27d8-4a04-a2b6-72e2f19a5ce9"
