@@ -226,9 +226,18 @@ section.block{padding:56px 0;border-top:1px solid var(--border);}
 .detail-head{padding:20px 0 8px;}
 .detail-head h2{font-size:2rem;margin-bottom:6px;}
 .detail-meta{color:var(--text-muted);font-size:0.9rem;margin-bottom:24px;}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px;}
-.gallery img{width:100%;height:180px;object-fit:cover;border-radius:3px;border:1px solid var(--border);}
-.detail-desc{max-width:70ch;color:var(--text-main);}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:32px;}
+.gallery img{width:100%;height:340px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+.gallery.single{grid-template-columns:1fr;}
+.gallery.single img{height:460px;}
+.detail-desc{
+  max-width:none;
+  width:100%;
+  color:var(--text-main);
+  font-size:1.05rem;
+  line-height:1.95;
+  white-space:pre-line;
+}
 
 /* ---------- Contact ---------- */
 .contact-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;padding:48px 0 64px;}

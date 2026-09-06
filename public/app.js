@@ -128,7 +128,9 @@ function openDetail(id) {
   document.getElementById("d-meta").textContent = meta.join("   |   ");
   document.getElementById("d-desc").textContent = a.description || "";
   const gallery = document.getElementById("d-gallery");
-  gallery.innerHTML = (a.photos || [])
+  const photos = a.photos || [];
+  gallery.classList.toggle("single", photos.length === 1);
+  gallery.innerHTML = photos
     .map((p) => `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`)
     .join("");
   showView("detail");
