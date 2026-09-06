@@ -6,22 +6,20 @@
 <title>Swapnil Nanavare — Heart Transplant Guidance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="brand" onclick="showView('home')">
-    <img id="site-logo" class="site-logo hidden" alt="Swapnil Nanavare logo">
-    <div class="brand-text">
-      <span class="brand-name">स्वप्नील नानावरे</span>
-      <span class="brand-tagline en">Heart Transplant Guidance</span>
-    </div>
+    <span class="brand-name">स्वप्नील नानावरे</span>
+    <span class="brand-tagline en">Heart Transplant Guidance</span>
   </div>
   <nav class="main-nav">
     <button class="nav-link en" id="nav-home" onclick="showView('home')">Home</button>
     <button class="nav-link en" id="nav-contact" onclick="showView('contact')">Contact Us</button>
+    <button class="nav-link admin-link en" id="nav-admin" onclick="showView('admin')">Admin</button>
   </nav>
 </header>
 
@@ -37,9 +35,8 @@
           <a class="btn btn-outline en" href="#awards-section">View Awards</a>
         </div>
       </div>
-      <div class="pulse-wrap" id="hero-visual">
-        <img id="hero-photo" class="hero-photo hidden" alt="स्वप्नील नानावरे">
-        <svg class="pulse-line" id="hero-pulse" viewBox="0 0 300 120" width="100%" height="140" aria-hidden="true">
+      <div class="pulse-wrap">
+        <svg class="pulse-line" viewBox="0 0 300 120" width="100%" height="140" aria-hidden="true">
           <path d="M0,60 L70,60 L90,20 L110,100 L130,40 L150,60 L300,60" />
         </svg>
       </div>
@@ -129,29 +126,6 @@
     </div>
     <div class="gallery" id="d-gallery"></div>
     <p class="detail-desc" id="d-desc"></p>
-
-    <section class="block" style="border-top:1px solid var(--border);margin-top:20px;">
-      <span class="eyebrow en">Comments</span>
-      <h2>अभिप्राय</h2>
-      <p class="lead">या पुरस्काराबद्दल तुमचे मत किंवा अनुभव इथे शेअर करा.</p>
-      <form class="comment-form" id="detail-comment-form" onsubmit="submitDetailComment(event)">
-        <div class="field">
-          <label class="en" for="dc-name">Name</label>
-          <input type="text" id="dc-name" required maxlength="60">
-        </div>
-        <div class="field">
-          <label class="en" for="dc-text">Comment</label>
-          <textarea id="dc-text" rows="3" required maxlength="600"></textarea>
-        </div>
-        <div>
-          <button type="submit" class="btn btn-primary en">Post Comment</button>
-        </div>
-        <div id="detail-comment-error" class="error-text hidden"></div>
-      </form>
-      <div id="detail-comments-loading" class="loading-note">अभिप्राय लोड होत आहेत...</div>
-      <ul class="comment-list hidden" id="detail-comment-list"></ul>
-      <div class="empty-state hidden" id="detail-comment-empty">अजून कोणीही अभिप्राय दिलेला नाही. पहिला अभिप्राय तुम्हीच द्या!</div>
-    </section>
   </main>
   <footer>
     <div class="mr-serif">© स्वप्नील नानावरे — Heart Transplant Guidance</div>
@@ -162,37 +136,11 @@
 <!-- ================= CONTACT VIEW ================= -->
 <div id="view-contact" class="hidden">
   <main>
-    <section class="block" style="border-top:none;padding-top:56px;">
-      <span class="eyebrow en">Contact</span>
-      <h2>संपर्क साधा</h2>
-      <p class="lead">काही प्रश्न आहेत किंवा मदतीची गरज आहे? खालील माहिती भरा, लवकरात लवकर संपर्क साधला जाईल.</p>
-
-      <div class="contact-cards">
-        <div class="contact-card">
-          <div class="cc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          </div>
-          <span class="cc-label en">Phone</span>
-          <span class="cc-value" id="ci-phone">—</span>
-        </div>
-        <div class="contact-card">
-          <div class="cc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>
-          </div>
-          <span class="cc-label en">Email</span>
-          <span class="cc-value" id="ci-email">—</span>
-        </div>
-        <div class="contact-card">
-          <div class="cc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <span class="cc-label en">Address</span>
-          <span class="cc-value" id="ci-address">—</span>
-        </div>
-      </div>
-
-      <div class="contact-form-card">
-        <h3 class="en">Send a Message</h3>
+    <div class="contact-grid">
+      <div>
+        <span class="eyebrow en">Contact</span>
+        <h2>संपर्क साधा</h2>
+        <p class="lead">काही प्रश्न आहेत किंवा मदतीची गरज आहे? खालील माहिती भरा, लवकरात लवकर संपर्क साधला जाईल.</p>
         <form class="comment-form" id="contact-form" onsubmit="submitContact(event)">
           <div class="field">
             <label class="en" for="k-name">Name</label>
@@ -217,7 +165,21 @@
           <div id="contact-confirm" class="confirm-msg hidden">तुमचा संदेश पाठवला गेला आहे. धन्यवाद!</div>
         </form>
       </div>
-    </section>
+      <div class="contact-info-block" id="contact-info-block">
+        <div class="ci-row">
+          <span class="ci-label en">Phone</span>
+          <span class="ci-value" id="ci-phone">—</span>
+        </div>
+        <div class="ci-row">
+          <span class="ci-label en">Email</span>
+          <span class="ci-value" id="ci-email">—</span>
+        </div>
+        <div class="ci-row">
+          <span class="ci-label en">Address</span>
+          <span class="ci-value" id="ci-address">—</span>
+        </div>
+      </div>
+    </div>
   </main>
   <footer>
     <div class="mr-serif">© स्वप्नील नानावरे — Heart Transplant Guidance</div>
@@ -239,6 +201,7 @@
         <div id="admin-login-error" class="error-text hidden en">Incorrect password.</div>
         <br>
         <button class="btn btn-primary en" onclick="adminLogin()">Login</button>
+        <p class="hint">Password is set as the ADMIN_PASSWORD environment variable in your Cloudflare Pages project settings.</p>
       </div>
     </div>
 
@@ -294,46 +257,32 @@
           <div id="award-error" class="error-text hidden"></div>
         </form>
 
-        <div class="table-scroll">
-          <table class="admin-table">
-            <thead><tr><th class="en">Title</th><th class="en">Year</th><th class="en">Organization</th><th class="en">Actions</th></tr></thead>
-            <tbody id="admin-awards-body"></tbody>
-          </table>
-        </div>
+        <table class="admin-table">
+          <thead><tr><th class="en">Title</th><th class="en">Year</th><th class="en">Organization</th><th class="en">Actions</th></tr></thead>
+          <tbody id="admin-awards-body"></tbody>
+        </table>
       </div>
 
       <!-- Comments Tab -->
       <div class="admin-panel" id="admin-panel-comments">
-        <div class="table-scroll">
-          <table class="admin-table">
-            <thead><tr><th class="en">Name</th><th class="en">Comment</th><th class="en">Article</th><th class="en">Date</th><th class="en">Actions</th></tr></thead>
-            <tbody id="admin-comments-body"></tbody>
-          </table>
-        </div>
+        <table class="admin-table">
+          <thead><tr><th class="en">Name</th><th class="en">Comment</th><th class="en">Date</th><th class="en">Actions</th></tr></thead>
+          <tbody id="admin-comments-body"></tbody>
+        </table>
       </div>
 
       <!-- Messages Tab -->
       <div class="admin-panel" id="admin-panel-messages">
-        <div class="table-scroll">
-          <table class="admin-table">
-            <thead><tr><th class="en">Name</th><th class="en">Email</th><th class="en">Phone</th><th class="en">Message</th><th class="en">Date</th><th class="en">Actions</th></tr></thead>
-            <tbody id="admin-messages-body"></tbody>
-          </table>
-        </div>
+        <table class="admin-table">
+          <thead><tr><th class="en">Name</th><th class="en">Email</th><th class="en">Phone</th><th class="en">Message</th><th class="en">Date</th><th class="en">Actions</th></tr></thead>
+          <tbody id="admin-messages-body"></tbody>
+        </table>
       </div>
 
       <!-- Site Info Tab -->
       <div class="admin-panel" id="admin-panel-siteinfo">
         <form class="admin-form" onsubmit="saveSiteInfo(event)">
           <h3 class="en">Site Contact Info</h3>
-          <div class="field">
-            <label class="en">Logo URL (Google Drive link works)</label>
-            <input type="text" id="si-logo-url" placeholder="https://drive.google.com/file/d/.../view">
-          </div>
-          <div class="field">
-            <label class="en">Hero Photo URL (Google Drive link works)</label>
-            <input type="text" id="si-hero-photo" placeholder="https://drive.google.com/file/d/.../view">
-          </div>
           <div class="field">
             <label class="en">Phone</label>
             <input type="text" id="si-phone">
