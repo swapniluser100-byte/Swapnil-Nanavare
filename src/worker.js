@@ -19,7 +19,7 @@ export default {
 
     if (path.startsWith("/api/")) {
       try {
-        return await handleApi(path, method, request, env);
+        return await handleApi(path, method, request, env, url);
       } catch (err) {
         return text("Server error: " + err.message, 500);
       }
@@ -30,7 +30,7 @@ export default {
   },
 };
 
-async function handleApi(path, method, request, env) {
+async function handleApi(path, method, request, env, url) {
   // ---------- /api/awards ----------
   if (path === "/api/awards" && method === "GET") {
     const { results } = await env.DB
@@ -102,9 +102,22 @@ async function handleApi(path, method, request, env) {
 
   // ---------- /api/comments ----------
   if (path === "/api/comments" && method === "GET") {
-    const { results } = await env.DB
-      .prepare("SELECT * FROM comments ORDER BY created_at DESC")
-      .all();
+    const scope = url.searchParams.get("scope");
+    const awardId = url.searchParams.get("awardId");
+    let stmt;
+    if (scope === "general") {
+      stmt = env.DB.prepare(
+        "SELECT * FROM comments WHERE award_id IS NULL ORDER BY created_at ASC"
+      );
+    } else if (awardId) {
+      stmt = env.DB.prepare(
+        "SELECT * FROM comments WHERE award_id = ? ORDER BY created_at ASC"
+      ).bind(awardId);
+    } else {
+      // No filter: used by the admin console to see everything.
+      stmt = env.DB.prepare("SELECT * FROM comments ORDER BY created_at DESC");
+    }
+    const { results } = await stmt.all();
     return json(results);
   }
   if (path === "/api/comments" && method === "POST") {
@@ -114,9 +127,16 @@ async function handleApi(path, method, request, env) {
     if (!name || !commentText) return text("Name and comment are required", 400);
     const id = crypto.randomUUID();
     await env.DB.prepare(
-      "INSERT INTO comments (id, name, text, created_at) VALUES (?, ?, ?, ?)"
+      "INSERT INTO comments (id, name, text, award_id, parent_id, created_at) VALUES (?, ?, ?, ?, ?, ?)"
     )
-      .bind(id, name, commentText, Date.now())
+      .bind(
+        id,
+        name,
+        commentText,
+        body.awardId || null,
+        body.parentId || null,
+        Date.now()
+      )
       .run();
     return json({ id });
   }
@@ -126,6 +146,7 @@ async function handleApi(path, method, request, env) {
   if (commentIdMatch && method === "DELETE") {
     if (!isAdmin(request, env)) return text("Unauthorized", 401);
     const id = commentIdMatch[1];
+    await env.DB.prepare("DELETE FROM comments WHERE parent_id=?").bind(id).run();
     await env.DB.prepare("DELETE FROM comments WHERE id=?").bind(id).run();
     return json({ ok: true });
   }

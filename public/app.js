@@ -64,8 +64,12 @@ function showView(view) {
   ["home", "detail", "contact", "admin"].forEach((v) => {
     document.getElementById("view-" + v).classList.toggle("hidden", v !== view);
   });
-  document.getElementById("nav-home").classList.toggle("active", view === "home");
-  document.getElementById("nav-contact").classList.toggle("active", view === "contact");
+  document
+    .getElementById("nav-home")
+    .classList.toggle("active", view === "home");
+  document
+    .getElementById("nav-contact")
+    .classList.toggle("active", view === "contact");
   window.scrollTo({ top: 0 });
   if (view === "contact") loadSiteInfo();
   if (view === "admin" && isAdminLoggedIn) refreshAdminData();
@@ -131,26 +135,78 @@ function openDetail(id) {
   const photos = a.photos || [];
   gallery.classList.toggle("single", photos.length === 1);
   gallery.innerHTML = photos
-    .map((p) => `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`)
+    .map(
+      (p) =>
+        `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`,
+    )
     .join("");
+  currentDetailAwardId = a.id;
+  document.getElementById("detail-comment-form").reset();
+  document.getElementById("detail-comment-error").classList.add("hidden");
+  loadDetailComments(a.id);
   showView("detail");
 }
 
-// ---------- Home: Comments ----------
-async function loadComments() {
-  let comments = [];
-  try {
-    comments = await apiGet("/api/comments");
-  } catch (e) {
-    comments = [];
-  }
-  renderComments(comments);
+// ---------- Comments (shared logic for home/general and per-award) ----------
+let currentDetailAwardId = null;
+
+function buildCommentTree(comments) {
+  const byId = {};
+  comments.forEach((c) => (byId[c.id] = { ...c, children: [] }));
+  const roots = [];
+  comments.forEach((c) => {
+    if (c.parent_id && byId[c.parent_id]) {
+      byId[c.parent_id].children.push(byId[c.id]);
+    } else {
+      roots.push(byId[c.id]);
+    }
+  });
+  roots.sort((a, b) => b.created_at - a.created_at);
+  const sortChildren = (node) => {
+    node.children.sort((a, b) => a.created_at - b.created_at);
+    node.children.forEach(sortChildren);
+  };
+  roots.forEach(sortChildren);
+  return roots;
 }
-function renderComments(comments) {
-  const list = document.getElementById("comment-list");
-  const empty = document.getElementById("comment-empty");
-  const loading = document.getElementById("comments-loading");
-  loading.classList.add("hidden");
+
+function renderCommentNode(node, awardId) {
+  const awardArg = awardId ? `'${awardId}'` : "null";
+  const childrenHtml = node.children
+    .map((ch) => renderCommentNode(ch, awardId))
+    .join("");
+  return `
+    <li class="comment-item">
+      <div class="c-head">
+        <span class="c-name">${escapeHtml(node.name)}</span>
+        <span class="en">${new Date(node.created_at).toLocaleDateString()}</span>
+      </div>
+      <div class="c-text">${escapeHtml(node.text)}</div>
+      <button type="button" class="reply-btn en" onclick="toggleReplyForm('${node.id}')">Reply</button>
+      <div class="reply-form-wrap hidden" id="reply-form-${node.id}">
+        <div class="field">
+          <label class="en">Name</label>
+          <input type="text" id="reply-name-${node.id}" maxlength="60">
+        </div>
+        <div class="field">
+          <label class="en">Reply</label>
+          <textarea id="reply-text-${node.id}" rows="2" maxlength="600"></textarea>
+        </div>
+        <div class="admin-row-actions">
+          <button type="button" class="btn btn-primary btn-small en" onclick="submitReply('${node.id}', ${awardArg})">Post Reply</button>
+          <button type="button" class="btn btn-ghost btn-small en" onclick="toggleReplyForm('${node.id}')">Cancel</button>
+        </div>
+        <div class="error-text hidden" id="reply-error-${node.id}"></div>
+      </div>
+      ${childrenHtml ? `<ul class="reply-list">${childrenHtml}</ul>` : ""}
+    </li>`;
+}
+
+function renderCommentsInto(comments, listId, emptyId, loadingId, awardId) {
+  const list = document.getElementById(listId);
+  const empty = document.getElementById(emptyId);
+  const loading = document.getElementById(loadingId);
+  if (loading) loading.classList.add("hidden");
   if (!comments.length) {
     list.classList.add("hidden");
     empty.classList.remove("hidden");
@@ -158,34 +214,125 @@ function renderComments(comments) {
   }
   empty.classList.add("hidden");
   list.classList.remove("hidden");
-  list.innerHTML = comments
-    .map(
-      (c) => `
-      <li class="comment-item">
-        <div class="c-head">
-          <span class="c-name">${escapeHtml(c.name)}</span>
-          <span class="en">${new Date(c.created_at).toLocaleDateString()}</span>
-        </div>
-        <div class="c-text">${escapeHtml(c.text)}</div>
-      </li>`
-    )
+  const tree = buildCommentTree(comments);
+  list.innerHTML = tree
+    .map((node) => renderCommentNode(node, awardId))
     .join("");
+}
+
+function toggleReplyForm(commentId) {
+  document.getElementById("reply-form-" + commentId).classList.toggle("hidden");
+}
+
+async function submitReply(parentId, awardId) {
+  const nameEl = document.getElementById("reply-name-" + parentId);
+  const textEl = document.getElementById("reply-text-" + parentId);
+  const errEl = document.getElementById("reply-error-" + parentId);
+  const name = nameEl.value.trim();
+  const replyText = textEl.value.trim();
+  errEl.classList.add("hidden");
+  if (!name || !replyText) {
+    errEl.textContent = "कृपया नाव आणि उत्तर दोन्ही भरा.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  try {
+    await apiSend("/api/comments", "POST", {
+      name,
+      text: replyText,
+      awardId: awardId || undefined,
+      parentId,
+    });
+    nameEl.value = "";
+    textEl.value = "";
+    document.getElementById("reply-form-" + parentId).classList.add("hidden");
+    if (awardId) {
+      loadDetailComments(awardId);
+    } else {
+      loadComments();
+    }
+  } catch (err) {
+    errEl.textContent = "उत्तर पाठवताना अडचण आली, पुन्हा प्रयत्न करा.";
+    errEl.classList.remove("hidden");
+  }
+}
+
+// ---------- Home: general comments ----------
+async function loadComments() {
+  let comments = [];
+  try {
+    comments = await apiGet("/api/comments?scope=general");
+  } catch (e) {
+    comments = [];
+  }
+  renderCommentsInto(
+    comments,
+    "comment-list",
+    "comment-empty",
+    "comments-loading",
+    null,
+  );
 }
 async function submitComment(e) {
   e.preventDefault();
   const name = document.getElementById("c-name").value.trim();
-  const text = document.getElementById("c-text").value.trim();
+  const commentText = document.getElementById("c-text").value.trim();
   const errEl = document.getElementById("comment-error");
   errEl.classList.add("hidden");
-  if (!name || !text) {
+  if (!name || !commentText) {
     errEl.textContent = "कृपया नाव आणि अभिप्राय दोन्ही भरा.";
     errEl.classList.remove("hidden");
     return;
   }
   try {
-    await apiSend("/api/comments", "POST", { name, text });
+    await apiSend("/api/comments", "POST", { name, text: commentText });
     document.getElementById("comment-form").reset();
     loadComments();
+  } catch (err) {
+    errEl.textContent = "अभिप्राय जतन करताना अडचण आली, पुन्हा प्रयत्न करा.";
+    errEl.classList.remove("hidden");
+  }
+}
+
+// ---------- Detail page: per-award comments ----------
+async function loadDetailComments(awardId) {
+  const loading = document.getElementById("detail-comments-loading");
+  loading.classList.remove("hidden");
+  let comments = [];
+  try {
+    comments = await apiGet(
+      "/api/comments?awardId=" + encodeURIComponent(awardId),
+    );
+  } catch (e) {
+    comments = [];
+  }
+  renderCommentsInto(
+    comments,
+    "detail-comment-list",
+    "detail-comment-empty",
+    "detail-comments-loading",
+    awardId,
+  );
+}
+async function submitDetailComment(e) {
+  e.preventDefault();
+  const name = document.getElementById("dc-name").value.trim();
+  const commentText = document.getElementById("dc-text").value.trim();
+  const errEl = document.getElementById("detail-comment-error");
+  errEl.classList.add("hidden");
+  if (!name || !commentText) {
+    errEl.textContent = "कृपया नाव आणि अभिप्राय दोन्ही भरा.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  try {
+    await apiSend("/api/comments", "POST", {
+      name,
+      text: commentText,
+      awardId: currentDetailAwardId,
+    });
+    document.getElementById("detail-comment-form").reset();
+    loadDetailComments(currentDetailAwardId);
   } catch (err) {
     errEl.textContent = "अभिप्राय जतन करताना अडचण आली, पुन्हा प्रयत्न करा.";
     errEl.classList.remove("hidden");
@@ -270,11 +417,13 @@ function adminLogout() {
   document.getElementById("admin-login-wrap").classList.remove("hidden");
 }
 function switchAdminTab(tab) {
-  document.querySelectorAll(".admin-tab-btn").forEach((b) =>
-    b.classList.toggle("active", b.dataset.tab === tab)
-  );
+  document
+    .querySelectorAll(".admin-tab-btn")
+    .forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
   ["awards", "comments", "messages", "siteinfo"].forEach((t) => {
-    document.getElementById("admin-panel-" + t).classList.toggle("active", t === tab);
+    document
+      .getElementById("admin-panel-" + t)
+      .classList.toggle("active", t === tab);
   });
 }
 async function refreshAdminData() {
@@ -317,7 +466,7 @@ function renderAdminAwardsTable() {
             <button class="btn btn-danger btn-small en" onclick="deleteAward('${a.id}')">Delete</button>
           </div>
         </td>
-      </tr>`
+      </tr>`,
     )
     .join("");
 }
@@ -377,7 +526,8 @@ async function saveAward(e) {
     renderAdminAwardsTable();
     resetAwardForm();
   } catch (err) {
-    errEl.textContent = "Could not save the award. Check your admin session and try again.";
+    errEl.textContent =
+      "Could not save the award. Check your admin session and try again.";
     errEl.classList.remove("hidden");
   }
 }
@@ -394,19 +544,32 @@ async function deleteAward(id) {
 function renderAdminCommentsTable(comments) {
   const body = document.getElementById("admin-comments-body");
   if (!comments.length) {
-    body.innerHTML = `<tr><td colspan="4" class="hint">No comments yet.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="5" class="hint">No comments yet.</td></tr>`;
     return;
   }
+  const byId = {};
+  comments.forEach((c) => (byId[c.id] = c));
   body.innerHTML = comments
-    .map(
-      (c) => `
+    .map((c) => {
+      const award = c.award_id
+        ? awardsCache.find((a) => a.id === c.award_id)
+        : null;
+      const articleLabel = c.award_id
+        ? escapeHtml(award ? award.title : "(deleted award)")
+        : "Home";
+      const parent = c.parent_id ? byId[c.parent_id] : null;
+      const nameLabel = parent
+        ? `${escapeHtml(c.name)} <span class="hint">(reply to ${escapeHtml(parent.name)})</span>`
+        : escapeHtml(c.name);
+      return `
       <tr>
-        <td>${escapeHtml(c.name)}</td>
+        <td>${nameLabel}</td>
         <td>${escapeHtml(c.text)}</td>
+        <td class="en">${articleLabel}</td>
         <td class="en">${new Date(c.created_at).toLocaleString()}</td>
         <td><button class="btn btn-danger btn-small en" onclick="deleteComment('${c.id}')">Delete</button></td>
-      </tr>`
-    )
+      </tr>`;
+    })
     .join("");
 }
 async function deleteComment(id) {
@@ -414,7 +577,8 @@ async function deleteComment(id) {
     await apiSend("/api/comments/" + id, "DELETE", undefined, true);
     const comments = await apiGet("/api/comments");
     renderAdminCommentsTable(comments);
-    renderComments(comments);
+    loadComments();
+    if (currentDetailAwardId) loadDetailComments(currentDetailAwardId);
   } catch (e) {}
 }
 
@@ -435,7 +599,7 @@ function renderAdminMessagesTable(messages) {
         <td>${escapeHtml(m.message)}</td>
         <td class="en">${new Date(m.created_at).toLocaleString()}</td>
         <td><button class="btn btn-danger btn-small en" onclick="deleteMessage('${m.id}')">Delete</button></td>
-      </tr>`
+      </tr>`,
     )
     .join("");
 }
@@ -454,7 +618,9 @@ async function saveSiteInfo(e) {
     phone: document.getElementById("si-phone").value.trim(),
     email: document.getElementById("si-email").value.trim(),
     address: document.getElementById("si-address").value.trim(),
-    heroPhoto: normalizePhotoUrl(document.getElementById("si-hero-photo").value.trim()),
+    heroPhoto: normalizePhotoUrl(
+      document.getElementById("si-hero-photo").value.trim(),
+    ),
   };
   try {
     await apiSend("/api/site-info", "PUT", info, true);

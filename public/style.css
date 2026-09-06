@@ -219,7 +219,21 @@ section.block{padding:56px 0;border-top:1px solid var(--border);}
 .comment-item{border-top:1px solid var(--border);padding-top:16px;}
 .comment-item .c-head{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;}
 .comment-item .c-name{font-weight:600;color:var(--ink);}
-.comment-item .c-text{color:var(--text-main);}
+.comment-item .c-text{color:var(--text-main);margin-bottom:8px;}
+.reply-btn{
+  background:none;border:none;padding:0;font-family:'Inter',sans-serif;
+  font-size:0.78rem;color:var(--accent-heart);font-weight:500;
+}
+.reply-btn:hover{text-decoration:underline;}
+.reply-form-wrap{
+  margin-top:10px;padding:14px;background:var(--tile-bg);border-radius:3px;
+  display:grid;gap:10px;max-width:460px;
+}
+.reply-list{
+  list-style:none;margin:14px 0 0;padding:0 0 0 20px;
+  border-left:2px solid var(--border);display:grid;gap:14px;
+}
+.reply-list .comment-item{border-top:none;padding-top:0;}
 
 /* ---------- Detail view ---------- */
 .detail-back{margin:28px 0 6px;}

@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS comments (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   text TEXT NOT NULL,
+  award_id TEXT,        -- NULL = general/home page comment, otherwise the award it belongs to
+  parent_id TEXT,        -- NULL = top-level comment, otherwise the comment id it replies to
   created_at INTEGER NOT NULL
 );
 
