@@ -64,12 +64,8 @@ function showView(view) {
   ["home", "detail", "contact", "admin"].forEach((v) => {
     document.getElementById("view-" + v).classList.toggle("hidden", v !== view);
   });
-  document
-    .getElementById("nav-home")
-    .classList.toggle("active", view === "home");
-  document
-    .getElementById("nav-contact")
-    .classList.toggle("active", view === "contact");
+  document.getElementById("nav-home").classList.toggle("active", view === "home");
+  document.getElementById("nav-contact").classList.toggle("active", view === "contact");
   window.scrollTo({ top: 0 });
   if (view === "contact") loadSiteInfo();
   if (view === "admin" && isAdminLoggedIn) refreshAdminData();
@@ -135,10 +131,7 @@ function openDetail(id) {
   const photos = a.photos || [];
   gallery.classList.toggle("single", photos.length === 1);
   gallery.innerHTML = photos
-    .map(
-      (p) =>
-        `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`,
-    )
+    .map((p) => `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`)
     .join("");
   currentDetailAwardId = a.id;
   document.getElementById("detail-comment-form").reset();
@@ -172,9 +165,7 @@ function buildCommentTree(comments) {
 
 function renderCommentNode(node, awardId) {
   const awardArg = awardId ? `'${awardId}'` : "null";
-  const childrenHtml = node.children
-    .map((ch) => renderCommentNode(ch, awardId))
-    .join("");
+  const childrenHtml = node.children.map((ch) => renderCommentNode(ch, awardId)).join("");
   return `
     <li class="comment-item">
       <div class="c-head">
@@ -215,9 +206,7 @@ function renderCommentsInto(comments, listId, emptyId, loadingId, awardId) {
   empty.classList.add("hidden");
   list.classList.remove("hidden");
   const tree = buildCommentTree(comments);
-  list.innerHTML = tree
-    .map((node) => renderCommentNode(node, awardId))
-    .join("");
+  list.innerHTML = tree.map((node) => renderCommentNode(node, awardId)).join("");
 }
 
 function toggleReplyForm(commentId) {
@@ -265,13 +254,7 @@ async function loadComments() {
   } catch (e) {
     comments = [];
   }
-  renderCommentsInto(
-    comments,
-    "comment-list",
-    "comment-empty",
-    "comments-loading",
-    null,
-  );
+  renderCommentsInto(comments, "comment-list", "comment-empty", "comments-loading", null);
 }
 async function submitComment(e) {
   e.preventDefault();
@@ -300,9 +283,7 @@ async function loadDetailComments(awardId) {
   loading.classList.remove("hidden");
   let comments = [];
   try {
-    comments = await apiGet(
-      "/api/comments?awardId=" + encodeURIComponent(awardId),
-    );
+    comments = await apiGet("/api/comments?awardId=" + encodeURIComponent(awardId));
   } catch (e) {
     comments = [];
   }
@@ -311,7 +292,7 @@ async function loadDetailComments(awardId) {
     "detail-comment-list",
     "detail-comment-empty",
     "detail-comments-loading",
-    awardId,
+    awardId
   );
 }
 async function submitDetailComment(e) {
@@ -339,6 +320,16 @@ async function submitDetailComment(e) {
   }
 }
 
+function renderSiteLogo(info) {
+  const logo = document.getElementById("site-logo");
+  if (info && info.logo_url) {
+    logo.src = normalizePhotoUrl(info.logo_url);
+    logo.classList.remove("hidden");
+  } else {
+    logo.classList.add("hidden");
+  }
+}
+
 // ---------- Hero photo ----------
 function renderHeroVisual(info) {
   const img = document.getElementById("hero-photo");
@@ -355,7 +346,7 @@ function renderHeroVisual(info) {
 
 // ---------- Contact ----------
 async function loadSiteInfo() {
-  let info = { phone: "", email: "", address: "", hero_photo: "" };
+  let info = { phone: "", email: "", address: "", hero_photo: "", logo_url: "" };
   try {
     info = await apiGet("/api/site-info");
   } catch (e) {}
@@ -363,6 +354,7 @@ async function loadSiteInfo() {
   document.getElementById("ci-email").textContent = info.email || "—";
   document.getElementById("ci-address").textContent = info.address || "—";
   renderHeroVisual(info);
+  renderSiteLogo(info);
   return info;
 }
 async function submitContact(e) {
@@ -417,13 +409,11 @@ function adminLogout() {
   document.getElementById("admin-login-wrap").classList.remove("hidden");
 }
 function switchAdminTab(tab) {
-  document
-    .querySelectorAll(".admin-tab-btn")
-    .forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+  document.querySelectorAll(".admin-tab-btn").forEach((b) =>
+    b.classList.toggle("active", b.dataset.tab === tab)
+  );
   ["awards", "comments", "messages", "siteinfo"].forEach((t) => {
-    document
-      .getElementById("admin-panel-" + t)
-      .classList.toggle("active", t === tab);
+    document.getElementById("admin-panel-" + t).classList.toggle("active", t === tab);
   });
 }
 async function refreshAdminData() {
@@ -443,6 +433,7 @@ async function refreshAdminData() {
     document.getElementById("si-email").value = info.email || "";
     document.getElementById("si-address").value = info.address || "";
     document.getElementById("si-hero-photo").value = info.hero_photo || "";
+    document.getElementById("si-logo-url").value = info.logo_url || "";
   } catch (e) {}
 }
 
@@ -466,7 +457,7 @@ function renderAdminAwardsTable() {
             <button class="btn btn-danger btn-small en" onclick="deleteAward('${a.id}')">Delete</button>
           </div>
         </td>
-      </tr>`,
+      </tr>`
     )
     .join("");
 }
@@ -526,8 +517,7 @@ async function saveAward(e) {
     renderAdminAwardsTable();
     resetAwardForm();
   } catch (err) {
-    errEl.textContent =
-      "Could not save the award. Check your admin session and try again.";
+    errEl.textContent = "Could not save the award. Check your admin session and try again.";
     errEl.classList.remove("hidden");
   }
 }
@@ -551,12 +541,8 @@ function renderAdminCommentsTable(comments) {
   comments.forEach((c) => (byId[c.id] = c));
   body.innerHTML = comments
     .map((c) => {
-      const award = c.award_id
-        ? awardsCache.find((a) => a.id === c.award_id)
-        : null;
-      const articleLabel = c.award_id
-        ? escapeHtml(award ? award.title : "(deleted award)")
-        : "Home";
+      const award = c.award_id ? awardsCache.find((a) => a.id === c.award_id) : null;
+      const articleLabel = c.award_id ? escapeHtml(award ? award.title : "(deleted award)") : "Home";
       const parent = c.parent_id ? byId[c.parent_id] : null;
       const nameLabel = parent
         ? `${escapeHtml(c.name)} <span class="hint">(reply to ${escapeHtml(parent.name)})</span>`
@@ -599,7 +585,7 @@ function renderAdminMessagesTable(messages) {
         <td>${escapeHtml(m.message)}</td>
         <td class="en">${new Date(m.created_at).toLocaleString()}</td>
         <td><button class="btn btn-danger btn-small en" onclick="deleteMessage('${m.id}')">Delete</button></td>
-      </tr>`,
+      </tr>`
     )
     .join("");
 }
@@ -618,9 +604,8 @@ async function saveSiteInfo(e) {
     phone: document.getElementById("si-phone").value.trim(),
     email: document.getElementById("si-email").value.trim(),
     address: document.getElementById("si-address").value.trim(),
-    heroPhoto: normalizePhotoUrl(
-      document.getElementById("si-hero-photo").value.trim(),
-    ),
+    heroPhoto: normalizePhotoUrl(document.getElementById("si-hero-photo").value.trim()),
+    logoUrl: normalizePhotoUrl(document.getElementById("si-logo-url").value.trim()),
   };
   try {
     await apiSend("/api/site-info", "PUT", info, true);
