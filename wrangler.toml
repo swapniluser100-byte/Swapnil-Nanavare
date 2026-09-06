@@ -1,4 +1,4 @@
-name = "swapnil-nanavare-website"
+name = "swapnil-nanavare"
 main = "src/worker.js"
 compatibility_date = "2024-09-01"
 
