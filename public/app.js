@@ -3,6 +3,32 @@ let adminPassword = sessionStorage.getItem("adminPassword") || "";
 let awardsCache = [];
 let editingAwardId = null;
 
+// Converts common Google Drive "share" link formats into a direct-image
+// link that actually renders in an <img> tag. Leaves non-Drive URLs untouched.
+function normalizePhotoUrl(url) {
+  if (!url) return url;
+  const trimmed = url.trim();
+  let fileId = null;
+
+  let m = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (m) fileId = m[1];
+
+  if (!fileId) {
+    m = trimmed.match(/[?&]id=([^&]+)/);
+    if (m && trimmed.includes("drive.google.com")) fileId = m[1];
+  }
+
+  if (!fileId) {
+    m = trimmed.match(/drive\.google\.com\/uc\?id=([^&]+)/);
+    if (m) fileId = m[1];
+  }
+
+  if (fileId) {
+    return `https://lh3.googleusercontent.com/d/${fileId}`;
+  }
+  return trimmed;
+}
+
 function escapeHtml(str) {
   if (str === undefined || str === null) return "";
   return String(str)
@@ -70,7 +96,7 @@ function renderAwardGrid() {
     .map((a) => {
       const cover =
         a.photos && a.photos[0]
-          ? `<img class="tile-cover" src="${escapeHtml(a.photos[0])}" alt="${escapeHtml(a.title)}">`
+          ? `<img class="tile-cover" src="${escapeHtml(normalizePhotoUrl(a.photos[0]))}" alt="${escapeHtml(a.title)}">`
           : `<div class="tile-cover-fallback">
              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#B8873B" stroke-width="1.5">
                <path d="M12 21s-7.5-4.6-10-9.3C.5 8.2 2.4 4.8 6 4.4c2.1-.2 3.7 1 6 3.3 2.3-2.3 3.9-3.5 6-3.3 3.6.4 5.5 3.8 4 7.3-2.5 4.7-10 9.3-10 9.3z"/>
@@ -103,7 +129,7 @@ function openDetail(id) {
   document.getElementById("d-desc").textContent = a.description || "";
   const gallery = document.getElementById("d-gallery");
   gallery.innerHTML = (a.photos || [])
-    .map((p) => `<img src="${escapeHtml(p)}" alt="${escapeHtml(a.title)}">`)
+    .map((p) => `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`)
     .join("");
   showView("detail");
 }
@@ -312,7 +338,8 @@ async function saveAward(e) {
     .getElementById("a-photos")
     .value.split(",")
     .map((s) => s.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map(normalizePhotoUrl);
   const record = {
     title,
     year: document.getElementById("a-year").value.trim(),
