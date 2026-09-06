@@ -190,15 +190,31 @@ async function submitComment(e) {
   }
 }
 
+// ---------- Hero photo ----------
+function renderHeroVisual(info) {
+  const img = document.getElementById("hero-photo");
+  const pulse = document.getElementById("hero-pulse");
+  if (info && info.hero_photo) {
+    img.src = normalizePhotoUrl(info.hero_photo);
+    img.classList.remove("hidden");
+    pulse.classList.add("hidden");
+  } else {
+    img.classList.add("hidden");
+    pulse.classList.remove("hidden");
+  }
+}
+
 // ---------- Contact ----------
 async function loadSiteInfo() {
-  let info = { phone: "", email: "", address: "" };
+  let info = { phone: "", email: "", address: "", hero_photo: "" };
   try {
     info = await apiGet("/api/site-info");
   } catch (e) {}
   document.getElementById("ci-phone").textContent = info.phone || "—";
   document.getElementById("ci-email").textContent = info.email || "—";
   document.getElementById("ci-address").textContent = info.address || "—";
+  renderHeroVisual(info);
+  return info;
 }
 async function submitContact(e) {
   e.preventDefault();
@@ -275,6 +291,7 @@ async function refreshAdminData() {
     document.getElementById("si-phone").value = info.phone || "";
     document.getElementById("si-email").value = info.email || "";
     document.getElementById("si-address").value = info.address || "";
+    document.getElementById("si-hero-photo").value = info.hero_photo || "";
   } catch (e) {}
 }
 
@@ -435,12 +452,14 @@ async function saveSiteInfo(e) {
     phone: document.getElementById("si-phone").value.trim(),
     email: document.getElementById("si-email").value.trim(),
     address: document.getElementById("si-address").value.trim(),
+    heroPhoto: normalizePhotoUrl(document.getElementById("si-hero-photo").value.trim()),
   };
   try {
     await apiSend("/api/site-info", "PUT", info, true);
     const saved = document.getElementById("siteinfo-saved");
     saved.classList.remove("hidden");
     setTimeout(() => saved.classList.add("hidden"), 1800);
+    loadSiteInfo();
   } catch (e) {}
 }
 
@@ -450,4 +469,5 @@ async function saveSiteInfo(e) {
   if (adminPassword) isAdminLoggedIn = true;
   await loadAwards();
   await loadComments();
+  await loadSiteInfo();
 })();

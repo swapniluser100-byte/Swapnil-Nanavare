@@ -35,8 +35,9 @@
           <a class="btn btn-outline en" href="#awards-section">View Awards</a>
         </div>
       </div>
-      <div class="pulse-wrap">
-        <svg class="pulse-line" viewBox="0 0 300 120" width="100%" height="140" aria-hidden="true">
+      <div class="pulse-wrap" id="hero-visual">
+        <img id="hero-photo" class="hero-photo hidden" alt="स्वप्नील नानावरे">
+        <svg class="pulse-line" id="hero-pulse" viewBox="0 0 300 120" width="100%" height="140" aria-hidden="true">
           <path d="M0,60 L70,60 L90,20 L110,100 L130,40 L150,60 L300,60" />
         </svg>
       </div>
@@ -283,6 +284,10 @@
       <div class="admin-panel" id="admin-panel-siteinfo">
         <form class="admin-form" onsubmit="saveSiteInfo(event)">
           <h3 class="en">Site Contact Info</h3>
+          <div class="field">
+            <label class="en">Hero Photo URL (Google Drive link works)</label>
+            <input type="text" id="si-hero-photo" placeholder="https://drive.google.com/file/d/.../view">
+          </div>
           <div class="field">
             <label class="en">Phone</label>
             <input type="text" id="si-phone">

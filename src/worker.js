@@ -166,17 +166,24 @@ async function handleApi(path, method, request, env) {
   // ---------- /api/site-info ----------
   if (path === "/api/site-info" && method === "GET") {
     const row = await env.DB
-      .prepare("SELECT phone, email, address FROM site_info WHERE id=1")
+      .prepare("SELECT phone, email, address, hero_photo FROM site_info WHERE id=1")
       .first();
-    return json(row || { phone: "", email: "", address: "" });
+    return json(
+      row || { phone: "", email: "", address: "", hero_photo: "" }
+    );
   }
   if (path === "/api/site-info" && method === "PUT") {
     if (!isAdmin(request, env)) return text("Unauthorized", 401);
     const body = await request.json();
     await env.DB.prepare(
-      "UPDATE site_info SET phone=?, email=?, address=? WHERE id=1"
+      "UPDATE site_info SET phone=?, email=?, address=?, hero_photo=? WHERE id=1"
     )
-      .bind(body.phone || "", body.email || "", body.address || "")
+      .bind(
+        body.phone || "",
+        body.email || "",
+        body.address || "",
+        body.heroPhoto || ""
+      )
       .run();
     return json({ ok: true });
   }

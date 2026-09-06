@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS site_info (
   id INTEGER PRIMARY KEY CHECK (id = 1),
   phone TEXT DEFAULT '',
   email TEXT DEFAULT '',
-  address TEXT DEFAULT ''
+  address TEXT DEFAULT '',
+  hero_photo TEXT DEFAULT ''
 );
 
 INSERT OR IGNORE INTO site_info (id, phone, email, address) VALUES (1, '', '', '');
