@@ -67,7 +67,7 @@ main{max-width:1080px;margin:0 auto;padding:0 32px;}
   display:grid;
   grid-template-columns:1.3fr 0.9fr;
   gap:48px;
-  align-items:center;
+  align-items:start;
   padding:72px 0 56px;
 }
 .hero h1{
