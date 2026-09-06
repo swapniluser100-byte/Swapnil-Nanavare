@@ -127,17 +127,86 @@ function openDetail(id) {
   if (a.org) meta.push("संस्था: " + a.org);
   document.getElementById("d-meta").textContent = meta.join("   |   ");
   document.getElementById("d-desc").textContent = a.description || "";
-  const gallery = document.getElementById("d-gallery");
-  const photos = a.photos || [];
-  gallery.classList.toggle("single", photos.length === 1);
-  gallery.innerHTML = photos
-    .map((p) => `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(a.title)}">`)
-    .join("");
+  renderSlider(a.photos || [], a.title);
   currentDetailAwardId = a.id;
   document.getElementById("detail-comment-form").reset();
   document.getElementById("detail-comment-error").classList.add("hidden");
   loadDetailComments(a.id);
   showView("detail");
+}
+
+// ---------- Image slider (award detail gallery, one photo at a time) ----------
+let sliderPhotos = [];
+let sliderIndex = 0;
+
+function renderSlider(photos, altText) {
+  sliderPhotos = photos || [];
+  sliderIndex = 0;
+  const wrap = document.getElementById("gallery-slider");
+  const track = document.getElementById("slider-track");
+  const dots = document.getElementById("slider-dots");
+  if (!sliderPhotos.length) {
+    wrap.classList.add("hidden");
+    track.innerHTML = "";
+    dots.innerHTML = "";
+    return;
+  }
+  wrap.classList.remove("hidden");
+  wrap.classList.toggle("single-photo", sliderPhotos.length === 1);
+  track.innerHTML = sliderPhotos
+    .map((p) => `<img src="${escapeHtml(normalizePhotoUrl(p))}" alt="${escapeHtml(altText || "")}">`)
+    .join("");
+  dots.innerHTML = sliderPhotos
+    .map(
+      (_, i) =>
+        `<button type="button" class="slider-dot${i === 0 ? " active" : ""}" onclick="slideTo(${i})" aria-label="Go to photo ${i + 1}"></button>`
+    )
+    .join("");
+  updateSliderPosition();
+}
+function updateSliderPosition() {
+  const track = document.getElementById("slider-track");
+  track.style.transform = `translateX(-${sliderIndex * 100}%)`;
+  document
+    .querySelectorAll("#slider-dots .slider-dot")
+    .forEach((d, i) => d.classList.toggle("active", i === sliderIndex));
+}
+function slideNext() {
+  if (!sliderPhotos.length) return;
+  sliderIndex = (sliderIndex + 1) % sliderPhotos.length;
+  updateSliderPosition();
+}
+function slidePrev() {
+  if (!sliderPhotos.length) return;
+  sliderIndex = (sliderIndex - 1 + sliderPhotos.length) % sliderPhotos.length;
+  updateSliderPosition();
+}
+function slideTo(i) {
+  sliderIndex = i;
+  updateSliderPosition();
+}
+function initSliderTouch() {
+  const vp = document.getElementById("slider-viewport");
+  let touchStartX = null;
+  vp.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.touches[0].clientX;
+    },
+    { passive: true }
+  );
+  vp.addEventListener(
+    "touchend",
+    (e) => {
+      if (touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) {
+        dx > 0 ? slidePrev() : slideNext();
+      }
+      touchStartX = null;
+    },
+    { passive: true }
+  );
 }
 
 // ---------- Comments (shared logic for home/general and per-award) ----------
@@ -620,6 +689,7 @@ async function saveSiteInfo(e) {
 (async function init() {
   document.getElementById("nav-home").classList.add("active");
   if (adminPassword) isAdminLoggedIn = true;
+  initSliderTouch();
   await loadAwards();
   await loadComments();
   await loadSiteInfo();

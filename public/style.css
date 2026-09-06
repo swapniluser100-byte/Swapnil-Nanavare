@@ -275,10 +275,26 @@ section.block{padding:56px 0;border-top:1px solid var(--border);}
 .detail-head{padding:20px 0 8px;}
 .detail-head h2{font-size:2rem;margin-bottom:6px;}
 .detail-meta{color:var(--text-muted);font-size:0.9rem;margin-bottom:24px;}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:32px;}
-.gallery img{width:100%;height:340px;object-fit:cover;border-radius:10px;border:1px solid var(--border);}
-.gallery.single{grid-template-columns:1fr;}
-.gallery.single img{height:460px;}
+.gallery-slider{position:relative;margin-bottom:32px;}
+.slider-viewport{overflow:hidden;border-radius:12px;border:1px solid var(--border);background:var(--tile-bg);}
+.slider-track{display:flex;transition:transform 0.35s ease;}
+.slider-track img{width:100%;flex:0 0 100%;height:440px;object-fit:cover;display:block;}
+.slider-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,0.92);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink);box-shadow:0 2px 10px rgba(36,30,61,0.15);
+}
+.slider-nav svg{width:20px;height:20px;}
+.slider-nav:hover{background:#fff;}
+.slider-prev{left:14px;}
+.slider-next{right:14px;}
+.gallery-slider.single-photo .slider-nav,
+.gallery-slider.single-photo .slider-dots{display:none;}
+.slider-dots{display:flex;justify-content:center;gap:8px;margin-top:14px;}
+.slider-dot{width:9px;height:9px;border-radius:50%;background:var(--border);border:none;padding:0;cursor:pointer;}
+.slider-dot.active{background:var(--accent-gold);}
 .detail-desc{
   max-width:none;
   width:100%;
@@ -372,7 +388,7 @@ html, body{overflow-x:hidden;}
   header.site-header{padding:14px 18px;}
   main{padding:0 18px;}
   .admin-shell{padding:28px 18px 60px;}
-  .gallery{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+  .slider-track img{height:300px;}
   .stats-row{grid-template-columns:repeat(2,1fr);}
 }
 @media (max-width:560px){
@@ -387,8 +403,9 @@ html, body{overflow-x:hidden;}
   .brand-tagline{display:none;}
   .site-logo{height:34px;width:34px;}
   .brand-name{font-size:1.1rem;}
-  .gallery{grid-template-columns:1fr;}
-  .gallery img, .gallery.single img{height:220px;}
+  .slider-track img{height:220px;}
+  .slider-nav{width:34px;height:34px;}
+  .slider-nav svg{width:16px;height:16px;}
   .admin-login-box{margin:40px auto;padding:24px;max-width:100%;}
   .reply-form-wrap{max-width:100%;}
   .comment-form{max-width:100%;}

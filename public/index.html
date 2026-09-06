@@ -152,7 +152,18 @@
       <h2 id="d-title"></h2>
       <div class="detail-meta" id="d-meta"></div>
     </div>
-    <div class="gallery" id="d-gallery"></div>
+    <div class="gallery-slider hidden" id="gallery-slider">
+      <div class="slider-viewport" id="slider-viewport">
+        <div class="slider-track" id="slider-track"></div>
+      </div>
+      <button type="button" class="slider-nav slider-prev en" onclick="slidePrev()" aria-label="Previous photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button type="button" class="slider-nav slider-next en" onclick="slideNext()" aria-label="Next photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <div class="slider-dots" id="slider-dots"></div>
+    </div>
     <p class="detail-desc" id="d-desc"></p>
 
     <section class="block" style="border-top:1px solid var(--border);margin-top:20px;">
