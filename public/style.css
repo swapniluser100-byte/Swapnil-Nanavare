@@ -203,49 +203,46 @@ section.block{padding:56px 0;border-top:1px solid var(--border);}
 .award-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:22px;
+  gap:24px;
 }
 .award-tile{
   background:var(--card);
-  border-left:5px solid var(--accent-gold);
-  border-radius:0 12px 12px 0;
+  border-radius:14px;
   overflow:hidden;
   text-align:left;
   padding:0;
-  border-top:1px solid var(--border);
-  border-right:1px solid var(--border);
-  border-bottom:1px solid var(--border);
+  border:1px solid var(--border);
   display:flex;
   flex-direction:column;
-  height:380px;
-  transition:transform 0.15s ease;
+  height:400px;
+  box-shadow:0 2px 10px rgba(36,30,61,0.06);
+  transition:transform 0.15s ease, box-shadow 0.15s ease;
 }
-.award-tile:hover{transform:translateY(-3px);}
+.award-tile:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(36,30,61,0.14);}
 
-.tile-image-wrap{position:relative;height:210px;flex-shrink:0;overflow:hidden;background:var(--tile-bg);}
+.tile-gold-bar{height:4px;flex-shrink:0;background:var(--accent-gold);}
+
+.tile-image-wrap{height:168px;flex-shrink:0;overflow:hidden;background:var(--tile-bg);}
 .award-tile .tile-cover{width:100%;height:100%;object-fit:cover;display:block;}
 .award-tile .tile-cover-fallback{
   width:100%;height:100%;background:linear-gradient(135deg,var(--tile-bg),#EADFC3);
-  display:flex;align-items:flex-start;justify-content:center;padding-top:34px;
+  display:flex;align-items:center;justify-content:center;
 }
-.tile-image-overlay{
-  position:absolute;left:0;right:0;bottom:0;
-  padding:34px 16px 12px;
-  background:linear-gradient(to top, rgba(20,15,10,0.82) 0%, rgba(20,15,10,0.55) 55%, rgba(20,15,10,0) 100%);
-}
-.award-tile .tile-title{font-family:'Mukta',sans-serif;font-weight:600;font-size:1.02rem;color:#FFFFFF;margin:0 0 4px;line-height:1.3;}
-.award-tile .tile-meta{font-size:0.78rem;color:rgba(255,255,255,0.88);font-family:'Poppins',sans-serif;}
 
-.award-tile .tile-body{
-  padding:14px 18px 16px;flex:1;display:flex;flex-direction:column;
-  background:#FFFFFF;
+.tile-info-band{background:var(--ink);padding:14px 18px 12px;flex-shrink:0;}
+.award-tile .tile-title{
+  font-family:'Mukta',sans-serif;font-weight:600;font-size:1rem;color:#FFFFFF;margin:0 0 4px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
+.award-tile .tile-meta{font-size:0.76rem;color:var(--accent-gold);font-family:'Poppins',sans-serif;}
+
+.award-tile .tile-body{padding:14px 18px 16px;flex:1;display:flex;flex-direction:column;background:#FFFFFF;}
 .award-tile .tile-desc{
-  font-size:0.92rem;color:#1A1A1A;line-height:1.6;
+  font-size:0.9rem;color:#2A2A2A;line-height:1.6;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
   margin-bottom:10px;
 }
-.award-tile .tile-link{margin-top:auto;font-size:0.82rem;color:var(--accent-heart);font-weight:500;text-align:left;background:none;border:none;padding:0;}
+.award-tile .tile-link{margin-top:auto;font-size:0.82rem;color:var(--accent-heart);font-weight:600;text-align:left;background:none;border:none;padding:0;}
 .award-card-btn{all:unset;cursor:pointer;display:block;}
 
 .empty-state{
