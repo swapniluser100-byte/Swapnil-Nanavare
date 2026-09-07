@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS site_info (
   email TEXT DEFAULT '',
   address TEXT DEFAULT '',
   hero_photo TEXT DEFAULT '',
-  logo_url TEXT DEFAULT ''
+  logo_url TEXT DEFAULT '',
+  slogan TEXT DEFAULT ''
 );
 
 INSERT OR IGNORE INTO site_info (id, phone, email, address) VALUES (1, '', '', '');

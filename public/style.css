@@ -85,6 +85,14 @@ main{max-width:1080px;margin:0 auto;padding:0 32px;}
   color:var(--ink);
   font-weight:600;
 }
+.hero-slogan{
+  font-family:'Mukta',sans-serif;
+  font-weight:600;
+  font-style:italic;
+  font-size:1.1rem;
+  color:var(--accent-heart);
+  margin:0 0 12px;
+}
 .hero p{
   font-size:1.05rem;
   color:var(--text-muted);

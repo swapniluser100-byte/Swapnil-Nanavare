@@ -30,6 +30,7 @@
   <main>
     <section class="hero">
       <div>
+        <p class="hero-slogan hidden" id="hero-slogan"></p>
         <h1>हृदय प्रत्यारोपणाच्या प्रवासात, तुम्ही एकटे नाही आहात</h1>
         <p>गेल्या ७-८ वर्षांपासून मी हृदय प्रत्यारोपणाची गरज असलेल्या रुग्णांना आणि त्यांच्या कुटुंबियांना योग्य दिशा, आवश्यक माहिती आणि मानसिक आधार देण्याचे काम करत आहे. या प्रवासात कुठून सुरुवात करावी, कोणत्या रुग्णालयाशी संपर्क साधावा, आर्थिक मदत कशी मिळवावी — या सर्व प्रश्नांची उत्तरे इथे मिळतील.</p>
         <div class="cta-row">
@@ -365,6 +366,10 @@
       <div class="admin-panel" id="admin-panel-siteinfo">
         <form class="admin-form" onsubmit="saveSiteInfo(event)">
           <h3 class="en">Site Contact Info</h3>
+          <div class="field">
+            <label class="en">Homepage Slogan</label>
+            <input type="text" id="si-slogan" placeholder="e.g. प्रत्येक हृदयाच्या ठोक्यासोबत, नवजीवनाची आशा.">
+          </div>
           <div class="field">
             <label class="en">Logo URL (Google Drive link works)</label>
             <input type="text" id="si-logo-url" placeholder="https://drive.google.com/file/d/.../view">

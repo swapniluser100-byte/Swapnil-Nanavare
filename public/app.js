@@ -406,6 +406,16 @@ async function submitDetailComment(e) {
   }
 }
 
+function renderSlogan(info) {
+  const el = document.getElementById("hero-slogan");
+  if (info && info.slogan) {
+    el.textContent = info.slogan;
+    el.classList.remove("hidden");
+  } else {
+    el.classList.add("hidden");
+  }
+}
+
 function renderSiteLogo(info) {
   const logo = document.getElementById("site-logo");
   if (info && info.logo_url) {
@@ -432,7 +442,7 @@ function renderHeroVisual(info) {
 
 // ---------- Contact ----------
 async function loadSiteInfo() {
-  let info = { phone: "", email: "", address: "", hero_photo: "", logo_url: "" };
+  let info = { phone: "", email: "", address: "", hero_photo: "", logo_url: "", slogan: "" };
   try {
     info = await apiGet("/api/site-info");
   } catch (e) {}
@@ -441,6 +451,7 @@ async function loadSiteInfo() {
   document.getElementById("ci-address").textContent = info.address || "—";
   renderHeroVisual(info);
   renderSiteLogo(info);
+  renderSlogan(info);
   return info;
 }
 async function submitContact(e) {
@@ -520,6 +531,7 @@ async function refreshAdminData() {
     document.getElementById("si-address").value = info.address || "";
     document.getElementById("si-hero-photo").value = info.hero_photo || "";
     document.getElementById("si-logo-url").value = info.logo_url || "";
+    document.getElementById("si-slogan").value = info.slogan || "";
   } catch (e) {}
 }
 
@@ -692,6 +704,7 @@ async function saveSiteInfo(e) {
     address: document.getElementById("si-address").value.trim(),
     heroPhoto: normalizePhotoUrl(document.getElementById("si-hero-photo").value.trim()),
     logoUrl: normalizePhotoUrl(document.getElementById("si-logo-url").value.trim()),
+    slogan: document.getElementById("si-slogan").value.trim(),
   };
   try {
     await apiSend("/api/site-info", "PUT", info, true);
