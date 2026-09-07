@@ -1,0 +1,18 @@
+{
+  "name": "swapnil-nanavare",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Swapnil Nanavare — Heart Transplant Guidance website (Cloudflare Worker + D1)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "types": "wrangler types",
+    "db:migrate:local": "wrangler d1 execute swapnil_nanavare_db --local --file=./schema.sql",
+    "db:migrate:remote": "wrangler d1 execute swapnil_nanavare_db --remote --file=./schema.sql",
+    "secrets": "wrangler secret list"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

@@ -106,11 +106,15 @@ function renderAwardGrid() {
       return `
         <button class="award-card-btn" onclick="openDetail('${a.id}')">
           <div class="award-tile">
-            ${cover}
+            <div class="tile-image-wrap">
+              ${cover}
+              <div class="tile-image-overlay">
+                <div class="tile-title">${escapeHtml(a.title)}</div>
+                <div class="tile-meta en">${escapeHtml(meta)}</div>
+              </div>
+            </div>
             <div class="tile-body">
-              <div class="tile-title">${escapeHtml(a.title)}</div>
-              <div class="tile-meta en">${escapeHtml(meta)}</div>
-              <div>${escapeHtml(a.shortDesc || "")}</div>
+              <div class="tile-desc">${escapeHtml(a.shortDesc || "")}</div>
               <span class="tile-link en">View Details →</span>
             </div>
           </div>
