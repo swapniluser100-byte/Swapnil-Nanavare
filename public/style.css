@@ -147,6 +147,9 @@ section.block{padding:56px 0;border-top:1px solid var(--border);}
 }
 .block h2{font-size:1.7rem;margin:0 0 10px;color:var(--ink);font-weight:600;}
 .block > .lead{color:var(--text-muted);max-width:65ch;margin:0 0 20px;}
+.about-text{max-width:none;width:100%;color:var(--text-muted);}
+.about-text p{margin:0 0 16px;font-size:1.02rem;}
+.about-text p:last-child{margin-bottom:0;}
 .stats-row{
   display:grid;
   grid-template-columns:repeat(4,1fr);
